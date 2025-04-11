@@ -13,12 +13,20 @@ import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-
+import { Button } from "@heroui/button";
 import { siteConfig } from "@/app/config/site";
 import { ThemeSwitcher } from "@/app/components/ThemeSwitcher";
 import { SearchIcon, Logo } from "@/app/components/icons";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  SignOutButton,
+} from "@clerk/nextjs";
+import LanSwitcher from "./LanSwitcher";
+import { getTranslations } from "next-intl/server";
 
-export const Navbar = () => {
+export const Navbar = async () => {
   const searchInput = (
     <Input
       aria-label="Search"
@@ -39,6 +47,9 @@ export const Navbar = () => {
       type="search"
     />
   );
+  const t = await getTranslations("menu");
+
+  const _siteConfig = siteConfig(t);
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -49,8 +60,8 @@ export const Navbar = () => {
             <p className="font-bold text-inherit">Du</p>
           </NextLink>
         </NavbarBrand>
-        <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
+        <ul className="hidden lg:flex gap-4 justify-start ml-40">
+          {_siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
@@ -72,6 +83,36 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
+
+        <SignedOut>
+          <NavbarItem className="hidden lg:flex">
+            <SignInButton mode="modal">
+              <Button color="primary">{t("Login")}</Button>
+            </SignInButton>
+          </NavbarItem>
+        </SignedOut>
+        <SignedIn>
+          <NavbarItem className="hidden lg:flex">
+            <Link
+              href="/user-profile"
+              className={clsx(
+                linkStyles({ color: "foreground" }),
+                "data-[active=true]:text-primary data-[active=true]:font-medium"
+              )}
+              color="foreground"
+            >
+              {t("UserProfile")}
+            </Link>
+          </NavbarItem>
+          <NavbarItem className="hidden lg:flex">
+            <SignOutButton>
+              <Button color="primary">{t("Logout")}</Button>
+            </SignOutButton>
+          </NavbarItem>
+        </SignedIn>
+        <NavbarItem className="hidden md:flex">
+          <LanSwitcher />
+        </NavbarItem>
         <NavbarItem className="hidden md:flex">
           <ThemeSwitcher />
         </NavbarItem>
@@ -79,19 +120,20 @@ export const Navbar = () => {
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitcher />
+        <LanSwitcher />
         <NavbarMenuToggle />
       </NavbarContent>
 
       <NavbarMenu>
         {searchInput}
         <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
+          {_siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
                 color={
                   index === 2
                     ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
+                    : index === _siteConfig.navMenuItems.length - 1
                     ? "danger"
                     : "foreground"
                 }
