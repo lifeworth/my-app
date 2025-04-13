@@ -85,14 +85,14 @@ export const Navbar = async () => {
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
 
         <SignedOut>
-          <NavbarItem className="hidden lg:flex">
+          <NavbarItem className="hidden  lg:flex">
             <SignInButton mode="modal">
               <Button color="primary">{t("Login")}</Button>
             </SignInButton>
           </NavbarItem>
         </SignedOut>
         <SignedIn>
-          <NavbarItem className="hidden lg:flex">
+          <NavbarItem className="hidden lg:flex ">
             <Link
               href="/user-profile"
               className={clsx(
