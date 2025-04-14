@@ -1,15 +1,17 @@
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
-type Props = {
+export default async function LocaleLayout({
+    children,
+    params,
+}: {
     children: React.ReactNode;
-    params: {locale: string};
-};
+    params: { locale: string };
+}) {
+    const localeThis = await (await (params)).locale;
+    const messages = await getMessages();
 
-export default async function LocaleLayout({children, params: { locale }}: Props) {
-    // Receive messages provided in `i18n.ts`
-    const messages = useMessages();
-   
-    return <NextIntlClientProvider locale={locale} messages={messages}>
-                {children}
-            </NextIntlClientProvider>
-  }
+    return <NextIntlClientProvider locale={localeThis} messages={messages}>
+        {children}
+    </NextIntlClientProvider>
+}
